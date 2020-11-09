@@ -63,6 +63,15 @@ void create_terminal() {
     }
 }
 
+void scroll_down() {
+    for (size_t y = 0; y < VGA_HEIGHT; y++) {
+        for (size_t x = 0; x < VGA_WIDTH; x++) {
+            terminal_buffer[y * VGA_WIDTH + x] = terminal_buffer[(y + 1) * VGA_WIDTH + x];
+        }
+    }
+    terminal_row--;
+}
+
 void putcharat(char c, uint8_t color, size_t x, size_t y) {
     // Puts a character at a given location
     const size_t index = y * VGA_WIDTH + x;
@@ -73,15 +82,16 @@ void putchar(char c) {
     // Puts a character at the current terminal location
     if (c == '\n') {
         terminal_column = 0;
-        terminal_row++;
+        if (++terminal_row == VGA_HEIGHT)
+            scroll_down();
         return;
     }
         
     putcharat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) { 
         terminal_column = 0; // If the next column goes beyond the screen, reset it to 0
-        if (++terminal_row == VGA_HEIGHT) 
-            terminal_row = 0; // If the next row goes beyond the screen, reset it to 0
+        if (++terminal_row == VGA_HEIGHT)
+            scroll_down();
     }
 }
 
@@ -95,7 +105,10 @@ void print(const char *s) {
 void kernel_main() {
     create_terminal();
 
-    for (int i = 0; i < VGA_HEIGHT; i++) {
-        print("Hello, World!\n");
+    for (int i = 0; i < (VGA_HEIGHT + 5); i++) {
+        print("Hello, ");
+        putchar(i + '0');
+        print(" World!\n");
     }
+    print("HELLO WORLD!");
 }
