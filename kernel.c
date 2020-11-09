@@ -71,6 +71,12 @@ void putcharat(char c, uint8_t color, size_t x, size_t y) {
 
 void putchar(char c) {
     // Puts a character at the current terminal location
+    if (c == '\n') {
+        terminal_column = 0;
+        terminal_row++;
+        return;
+    }
+        
     putcharat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) { 
         terminal_column = 0; // If the next column goes beyond the screen, reset it to 0
@@ -89,5 +95,7 @@ void print(const char *s) {
 void kernel_main() {
     create_terminal();
 
-    print("Hello, World!");
+    for (int i = 0; i < VGA_HEIGHT; i++) {
+        print("Hello, World!\n");
+    }
 }
