@@ -2,6 +2,4 @@
 
 void kernel_main() {
     create_terminal();
-
-    write("Hello, World!");
 }
