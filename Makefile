@@ -9,7 +9,7 @@ SYSROOT = sysroot/
 CFLAGS = -g -ffreestanding -std=gnu99 -Wall -Wextra -I./src
 LDFLAGS = -nostdlib -lgcc -T $(RESOURCE_DIR)/linker.ld
 
-OBJS = src/kernel/boot.o src/kernel/kernel.o src/kernel/tty.o src/kernel/crti.o src/kernel/crtbegin.o src/kernel/crtn.o src/kernel/crtend.o
+OBJS = src/kernel/boot.o src/kernel/kernel.o src/kernel/tty.o src/kernel/crti.o src/kernel/crtbegin.o src/kernel/crtn.o src/kernel/crtend.o src/libc/string/strlen.o src/libc/stdio/printf.o src/libc/stdio/putchar.o
 
 all: $(BUILD_DIR)/boot/axolotl.bin
 

@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 void create_terminal();
-void putchar(char c);
+void writechar(char c);
 void write(const char* data);
 
 #endif

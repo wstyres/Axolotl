@@ -1,7 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "tty.h"
+#include <kernel/tty.h>
+#include <libc/string/string.h>
 
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
@@ -41,14 +42,6 @@ uint16_t create_vga_character(char character, uint8_t color) {
     return (uint16_t)character | (uint16_t)color << 8;
 }
 
-size_t strlen(const char *s) {
-    // Re-implementation of stdlib strlen since we don't have access to stdlib
-    size_t len = 0;
-    while (s[len])
-        len++;
-    return len;
-}
-
 void create_terminal() {
     // Initializes the terminal
     terminal_row = 0;
@@ -74,13 +67,13 @@ void scroll_down() {
     terminal_row--;
 }
 
-void putcharat(char c, uint8_t color, size_t x, size_t y) {
+void writecharat(char c, uint8_t color, size_t x, size_t y) {
     // Puts a character at a given location
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = create_vga_character(c, color);
 }
 
-void putchar(char c) {
+void writechar(char c) {
     // Puts a character at the current terminal location
     if (c == '\n') {
         terminal_column = 0;
@@ -89,7 +82,7 @@ void putchar(char c) {
         return;
     }
         
-    putcharat(c, terminal_color, terminal_column, terminal_row);
+    writecharat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) { 
         terminal_column = 0; // If the next column goes beyond the screen, reset it to 0
         if (++terminal_row == VGA_HEIGHT)
@@ -100,6 +93,6 @@ void putchar(char c) {
 void write(const char *s) {
     size_t length = strlen(s);
     for (size_t i = 0; i < length; i++) {
-        putchar(s[i]);
+        writechar(s[i]);
     }
 }
