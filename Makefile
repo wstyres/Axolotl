@@ -31,8 +31,8 @@ $(BUILD_DIR)/boot/grub/grub.cfg: $(RESOURCE_DIR)/grub.cfg
 axolotl.iso: $(BUILD_DIR)/boot/axolotl.bin $(BUILD_DIR)/boot/grub/grub.cfg 
 	grub-mkrescue -o $@ $(BUILD_DIR)
 
-# run: axolotl.iso
-# 	$(EMULATOR) $(EMFLAGS) -cdrom $^
+run: axolotl.iso
+	qemu-system-i386 -cdrom $^
 
 clean:
 	@rm -rf *. $(ISO_DIR) $(ISO_NAME)
