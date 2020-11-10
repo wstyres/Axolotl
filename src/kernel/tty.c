@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "tty.h"
+
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
@@ -95,20 +97,9 @@ void putchar(char c) {
     }
 }
 
-void print(const char *s) {
+void write(const char *s) {
     size_t length = strlen(s);
     for (size_t i = 0; i < length; i++) {
         putchar(s[i]);
     }
-}
-
-void kernel_main() {
-    create_terminal();
-
-    for (int i = 0; i < (VGA_HEIGHT + 5); i++) {
-        print("Hello, ");
-        putchar(i + '0');
-        print(" World!\n");
-    }
-    print("HELLO WORLD!");
 }
