@@ -1,5 +1,5 @@
-#ifndef _STDIO_H
-#define _STDIO_H
+#ifndef STDIO_H
+#define STDIO_H
 
 #define EOF (-1)
 
