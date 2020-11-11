@@ -16,7 +16,7 @@ struct gdt_descriptor {
 typedef struct gdt_descriptor gdt_descriptor_t;
 
 // External function defined in reload.s
-extern void reloadSegmentRegisters(gdt_descriptor_t *descriptor);
+extern void reloadGDT(gdt_descriptor_t *descriptor);
 
 void gdt_table_initialize();
 

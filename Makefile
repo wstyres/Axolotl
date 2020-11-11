@@ -7,9 +7,9 @@ LD = i686-elf-ld
 CC = i686-elf-gcc
 SYSROOT = sysroot/
 CFLAGS = -g -ffreestanding -std=gnu99 -Wall -Wextra -I./src
-LDFLAGS = -ffreestanding -nostdlib -lgcc -T $(RESOURCE_DIR)/linker.ld
+LDFLAGS = -ffreestanding -nostdlib -lgcc -T $(RESOURCE_DIR)/linker.ld -I./src
 
-OBJS = src/kernel/boot.o src/kernel/kernel.o src/kernel/tty.o src/kernel/crti.o src/kernel/crtbegin.o src/kernel/crtn.o src/kernel/crtend.o src/libc/string/strlen.o src/libc/stdio/printf.o src/libc/stdio/putchar.o src/kernel/gdt/gdt.c src/kernel/gdt/reload.s
+OBJS = src/kernel/boot.o src/kernel/kernel.o src/kernel/tty.o src/kernel/crti.o src/kernel/crtbegin.o src/kernel/crtn.o src/kernel/crtend.o src/libc/string/strlen.o src/libc/stdio/printf.o src/libc/stdio/putchar.o src/kernel/gdt/gdt.c src/kernel/gdt/reload.s src/kernel/interrupts/interrupts.c src/kernel/interrupts/idt.s src/libc/outb.c
 
 all: $(BUILD_DIR)/boot/axolotl.bin
 
@@ -34,7 +34,10 @@ axolotl.iso: $(BUILD_DIR)/boot/axolotl.bin $(BUILD_DIR)/boot/grub/grub.cfg
 	grub-mkrescue -o $@ $(BUILD_DIR)
 
 run: axolotl.iso
-	qemu-system-i386 -cdrom $^
+	qemu-system-i386 -vga std -net nic,model=ne2k_pci -D qemu.log -serial file:syslog.log -monitor stdio -d guest_errors -cdrom $^ 
+
+debug: axolotl.iso
+	gdb -x script.gdb
 
 clean:
-	@rm -rf src/*/*.o src/*/*.d src/axolotl.bin axolotl.iso
+	@rm -rf src/*/*.o src/*/*.d src/*/*/*.o src/*/*/*.d src/axolotl.bin axolotl.iso *.log
