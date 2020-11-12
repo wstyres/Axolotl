@@ -23,9 +23,6 @@ stack_top:
 .global _start
 .type _start, @function
 _start:
-    # Disable interrupts
-    cli
-
     # Set up a simple stack
     mov $stack_top, %esp
 
