@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include <kernel/tty.h>
-#include <libc/string/string.h>
+#include <stdlib/string/string.h>
 
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
