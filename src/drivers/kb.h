@@ -6,4 +6,5 @@
 #define ICW1 0x11
 #define ICW4 0x01
 
-char *get_input();
+void init_pics(int pic1, int pic2);
+char getchar();

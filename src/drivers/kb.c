@@ -60,21 +60,15 @@ void init_pics(int pic1, int pic2) {
     outb(PIC1 + 1, 0xFF);
 }
 
-char *get_input() {
-    char c = 0;
-    char *ret = malloc(sizeof(char) * 256);
+char getchar() {
+    char ret = 0;
 
-    init_pics(0x20, 0x28);
     do {
-        if (inb(0x60) != c) {
-            c = inb(0x60);
-            if (c > 0) {
-                strccat(ret, en_us_scancodes[(uint8_t)c]);
-            }
+        char inbyte = inb(0x60);
+        if (inbyte != ret && inbyte > 0) {
+            ret = inbyte;
         }
+    } while (ret == 0); // Read until a character is pressed
 
-    } while (c != 28); // Read until enter is pressed
-
-    char *asPointer = &ret[0];
-    return asPointer;
+    return en_us_scancodes[ret];
 }
