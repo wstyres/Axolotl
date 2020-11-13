@@ -5,6 +5,7 @@
 
 void create_terminal();
 void writechar(char c);
+void deletechar();
 void write(const char* data);
 
 #endif

@@ -4,6 +4,7 @@
 #include <stdlib/stdlib.h>
 #include <stdlib/string/string.h>
 #include <kernel/tty.h>
+#include <stdbool.h>
 
 unsigned char en_us_scancodes[128] = {
     0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
@@ -60,15 +61,22 @@ void init_pics(int pic1, int pic2) {
     outb(PIC1 + 1, 0xFF);
 }
 
+bool keypressFinished = false;
+
 char getchar() {
     char ret = 0;
 
-    do {
+    keypressFinished = false;
+    while (1) {
         char inbyte = inb(0x60);
-        if (inbyte != ret && inbyte > 0) {
-            ret = inbyte;
+        if (inbyte & 0x80) { // If the highest bit from what we just read is set, the key has just been released
+            keypressFinished = true;
         }
-    } while (ret == 0); // Read until a character is pressed
+        else if (inbyte != ret && inbyte > 0 && keypressFinished) {
+            keypressFinished = false; // Reset for next time
+            return en_us_scancodes[inbyte];
+        }
+    }
 
-    return en_us_scancodes[ret];
+    return 0;
 }

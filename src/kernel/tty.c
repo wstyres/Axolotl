@@ -90,6 +90,12 @@ void writechar(char c) {
     }
 }
 
+void deletechar() {
+    // Deletes the character at the current terminal location
+    writecharat(' ', terminal_color, terminal_column - 1, terminal_row);
+    terminal_column--;
+}
+
 void write(const char *s) {
     size_t length = strlen(s);
     for (size_t i = 0; i < length; i++) {
