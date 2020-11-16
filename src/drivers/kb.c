@@ -73,8 +73,11 @@ char getchar() {
             keypressFinished = true;
         }
         else if (inbyte != ret && inbyte > 0 && keypressFinished) {
-            keypressFinished = false; // Reset for next time
-            return en_us_scancodes[inbyte];
+            char mapped_char = en_us_scancodes[inbyte];
+            if (mapped_char > 0) { // Make sure that the key isn't NULL
+                keypressFinished = false; // Reset for next time
+                return en_us_scancodes[inbyte];
+            }
         }
     }
 
