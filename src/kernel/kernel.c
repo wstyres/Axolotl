@@ -15,5 +15,6 @@ void kernel_main() {
     init_pics(0x20, 0x28);
     printf("PICS Initialized!\n");
 
+    create_terminal();
 	shell();
 }
