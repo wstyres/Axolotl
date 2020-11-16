@@ -5,13 +5,18 @@
 #include <drivers/kb.h>
 #include <stdlib/stdlib.h>
 
-void addcursor() {
-    writechar('_');
-}
+enum Commands {
+    HelpCommand,
+    CommandCount
+};
 
-void removecursor() {
-    deletechar();
-}
+typedef struct {
+    char *name;
+    char *description;
+    void *function;
+} command_t;
+
+command_t *commands;
 
 char *getinput() {
     char *input = malloc(sizeof(char) * 256);
@@ -40,8 +45,42 @@ char *getinput() {
     return input;
 }
 
-void shell() {
-    write("axolotl> ");
+void help_command() {
+    write("\nAvailable commands:\n");
+    write("Type \'help\' to see this list\n");
+    for (int i = 0; i < CommandCount; i++) {
+        write("\n\t");
+        write(commands[i].name);
+        write("\t");
+        write(commands[i].description);
+    }
+    write("\n\n");
+}
 
-    char *input = getinput();
+void initialize_commands() {
+    commands = malloc(sizeof(command_t) * CommandCount);
+
+    commands[HelpCommand].name = "help";
+    commands[HelpCommand].description = "Display help information";
+    commands[HelpCommand].function = help_command;
+}
+
+void perform_command(const char *command) {
+    for (int i = 0; i < CommandCount; i++) {
+        if (strcmp(command, commands[i].name) == 0) {
+            void(*command_function)(void) = commands[i].function;
+            command_function();
+        }
+    }
+}
+
+void shell() {
+    initialize_commands();
+
+    while (1) {
+        write("axolotl> ");
+
+        char *input = getinput();
+        perform_command(input);
+    }
 }
