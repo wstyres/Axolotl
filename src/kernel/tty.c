@@ -3,6 +3,7 @@
 
 #include <kernel/tty.h>
 #include <stdlib/string/string.h>
+#include <stdlib/sys/io.h>
 
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
@@ -46,7 +47,7 @@ void create_terminal() {
     // Initializes the terminal
     terminal_row = 0;
     terminal_column = 0;
-    terminal_color = create_vga_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+    terminal_color = create_vga_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     terminal_buffer = (uint16_t *)0xB8000;
 
     // Since we don't have any memory allocation yet, we initialize the buffer to all blank.
@@ -67,6 +68,14 @@ void scroll_down() {
     terminal_row--;
 }
 
+void addcursor() {
+    writechar('_');
+}
+
+void removecursor() {
+    deletechar();
+}
+
 void writecharat(char c, uint8_t color, size_t x, size_t y) {
     // Puts a character at a given location
     const size_t index = y * VGA_WIDTH + x;
@@ -79,6 +88,14 @@ void writechar(char c) {
         terminal_column = 0;
         if (++terminal_row == VGA_HEIGHT)
             scroll_down();
+        return;
+    } else if (c == '\t') {
+        terminal_column += 4;
+        if (terminal_column >= VGA_WIDTH) {
+            terminal_column = 0;
+            if (++terminal_row == VGA_HEIGHT)
+                scroll_down();
+        }
         return;
     }
         
