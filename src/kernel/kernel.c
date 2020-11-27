@@ -11,8 +11,8 @@ void kernel_main() {
     initialize_memory();
     printf("Memory Initialized!\n");
 
-    printf("Initializing PICS...\n");
-    init_pics(0x20, 0x28);
+    printf("Initializing Keyboard Driver...\n");
+    initialize_keyboard();
     printf("PICS Initialized!\n");
 
     create_terminal();
