@@ -66,6 +66,7 @@ void initialize_keyboard() {
 }
 
 bool keypressFinished = false;
+bool holdingShift = false;
 
 char getchar() {
     char ret = 0;
@@ -75,12 +76,24 @@ char getchar() {
         char inbyte = inb(0x60);
         if (inbyte & 0x80) { // If the highest bit from what we just read is set, the key has just been released
             keypressFinished = true;
+
+            inbyte = inbyte ^ 0x80;
+            if (inbyte == 42 || inbyte == 54) {
+                holdingShift = false;
+            }
         }
         else if (inbyte != ret && inbyte > 0 && keypressFinished) {
+            if (inbyte == 42 || inbyte == 54) {
+                holdingShift = true;
+                continue;
+            }
+
             char mapped_char = en_us_scancodes[inbyte];
             if (mapped_char > 0) { // Make sure that the key isn't NULL
                 keypressFinished = false; // Reset for next time
-                return en_us_scancodes[inbyte];
+
+                if (holdingShift) return mapped_char - 32;
+                return mapped_char;
             }
         }
     }
