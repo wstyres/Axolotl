@@ -40,10 +40,6 @@ unsigned char en_us_scancodes[128] = {
     0, /* All other keys are undefined */
 };
 
-void initialize_keyboard() {
-    init_pics(0x20, 0x28);
-}
-
 void init_pics(int pic1, int pic2) {
     /* send ICW1 */
     outb(PIC1, ICW1);
@@ -63,6 +59,10 @@ void init_pics(int pic1, int pic2) {
 
     /* disable all IRQs */
     outb(PIC1 + 1, 0xFF);
+}
+
+void initialize_keyboard() {
+    init_pics(0x20, 0x28);
 }
 
 bool keypressFinished = false;

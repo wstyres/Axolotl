@@ -98,6 +98,8 @@ void shell() {
         printf("axolotl> ");
 
         char *input = getinput();
+        set_text_color(VGA_COLOR_LIGHT_GREY);
         perform_command(input);
+        set_text_color(VGA_COLOR_WHITE);
     }
 }

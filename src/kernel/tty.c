@@ -5,37 +5,30 @@
 #include <stdlib/string/string.h>
 #include <stdlib/sys/io.h>
 
-enum vga_color {
-	VGA_COLOR_BLACK = 0,
-	VGA_COLOR_BLUE = 1,
-	VGA_COLOR_GREEN = 2,
-	VGA_COLOR_CYAN = 3,
-	VGA_COLOR_RED = 4,
-	VGA_COLOR_MAGENTA = 5,
-	VGA_COLOR_BROWN = 6,
-	VGA_COLOR_LIGHT_GREY = 7,
-	VGA_COLOR_DARK_GREY = 8,
-	VGA_COLOR_LIGHT_BLUE = 9,
-	VGA_COLOR_LIGHT_GREEN = 10,
-	VGA_COLOR_LIGHT_CYAN = 11,
-	VGA_COLOR_LIGHT_RED = 12,
-	VGA_COLOR_LIGHT_MAGENTA = 13,
-	VGA_COLOR_LIGHT_BROWN = 14,
-	VGA_COLOR_WHITE = 15,
-};
-
 // Size of the terminal
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
 size_t terminal_row; // Current y position of terminal
 size_t terminal_column; // Current x position of terminal
-uint8_t terminal_color; // Current color of terminal
+enum vga_color text_color; // Current text color of the terminal
+enum vga_color background_color; // Current background color of the terminal
+uint8_t terminal_color; // Current color of terminal, combination of text_color and background_color
 uint16_t *terminal_buffer; // Terminal buffer array
 
 uint8_t create_vga_color(enum vga_color foreground_color, enum vga_color background_color) {
     // Creates a VGA Color from a foreground color and a background color
     return foreground_color | background_color << 4;
+}
+
+void set_text_color(enum vga_color color) {
+    text_color = color;
+    terminal_color = create_vga_color(text_color, background_color);
+}
+
+void set_background_color(enum vga_color color) {
+    background_color = color;
+    terminal_color = create_vga_color(text_color, background_color);
 }
 
 uint16_t create_vga_character(char character, uint8_t color) {
@@ -47,7 +40,8 @@ void create_terminal() {
     // Initializes the terminal
     terminal_row = 0;
     terminal_column = 0;
-    terminal_color = create_vga_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    set_text_color(VGA_COLOR_WHITE);
+    set_background_color(VGA_COLOR_BLACK);
     terminal_buffer = (uint16_t *)0xB8000;
 
     // Since we don't have any memory allocation yet, we initialize the buffer to all blank.
