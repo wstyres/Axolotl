@@ -1,11 +1,16 @@
 #include "shell.h"
 
+#define SHELL_VERSION "0.1.0"
+
 #include <stdlib/string/string.h>
 #include <kernel/tty.h>
 #include <drivers/kb.h>
 #include <stdlib/stdlib.h>
+#include <kernel/clock.h>
+#include <stdlib/stdio/stdio.h>
 
 enum Commands {
+    TimeCommand,
     HelpCommand,
     CommandCount
 };
@@ -45,20 +50,29 @@ char *getinput() {
     return input;
 }
 
+void time_command() {
+    printf("The current time is %s\n", date_time());
+}
+
 void help_command() {
-    write("\nAvailable commands:\n");
-    write("Type \'help\' to see this list\n");
+    printf("Axolotl Shell, version " SHELL_VERSION " (i386)\n");
+    printf("These shell commands are defined internally.  Type 'help' to see this list.\n");
+    printf("Type 'help name' to find out more about the function 'name'.\n");
     for (int i = 0; i < CommandCount; i++) {
-        write("\n\t");
-        write(commands[i].name);
-        write("\t");
-        write(commands[i].description);
+        printf("\n\t");
+        printf(commands[i].name);
+        printf("\t");
+        printf(commands[i].description);
     }
-    write("\n\n");
+    printf("\n\n");
 }
 
 void initialize_commands() {
     commands = malloc(sizeof(command_t) * CommandCount);
+
+    commands[TimeCommand].name = "time";
+    commands[TimeCommand].description = "Display the current system time";
+    commands[TimeCommand].function = time_command;
 
     commands[HelpCommand].name = "help";
     commands[HelpCommand].description = "Display help information";
@@ -70,15 +84,18 @@ void perform_command(const char *command) {
         if (strcmp(command, commands[i].name) == 0) {
             void(*command_function)(void) = commands[i].function;
             command_function();
+            return;
         }
     }
+
+    printf("command not found: %s\n", command);
 }
 
 void shell() {
     initialize_commands();
 
     while (1) {
-        write("axolotl> ");
+        printf("axolotl> ");
 
         char *input = getinput();
         perform_command(input);
