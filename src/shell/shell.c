@@ -10,6 +10,7 @@
 #include <stdlib/stdio/stdio.h>
 
 enum Commands {
+    ClearCommand,
     TimeCommand,
     HelpCommand,
     CommandCount
@@ -50,6 +51,10 @@ char *getinput() {
     return input;
 }
 
+void clear_command() {
+    clear_terminal();
+}
+
 void time_command() {
     printf("The current time is %s\n", date_time());
 }
@@ -70,6 +75,10 @@ void help_command() {
 void initialize_commands() {
     commands = malloc(sizeof(command_t) * CommandCount);
 
+    commands[ClearCommand].name = "clear";
+    commands[ClearCommand].description = "Clear the terminal screen";
+    commands[ClearCommand].function = clear_command;
+
     commands[TimeCommand].name = "time";
     commands[TimeCommand].description = "Display the current system time";
     commands[TimeCommand].function = time_command;
@@ -88,7 +97,7 @@ void perform_command(const char *command) {
         }
     }
 
-    printf("command not found: %s\n", command);
+    printf("command not found: %s", command);
 }
 
 void shell() {

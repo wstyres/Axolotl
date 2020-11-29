@@ -23,6 +23,7 @@ enum vga_color {
 };
 
 void create_terminal();
+void clear_terminal();
 void writechar(char c);
 void deletechar();
 void write(const char* data);
