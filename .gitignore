@@ -4,3 +4,4 @@
 .build/
 axolotl.iso
 *.log
+.vscode
