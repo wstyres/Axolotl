@@ -1,14 +1,9 @@
-.section .init
-.global _init
-.type _init, @function
+section .init
+global  _init
 _init:
-	push %ebp
-	movl %esp, %ebp
+	push ebp
 
-.section .fini
-.global _fini
-.type _fini, @function
+section .fini
+global  _fini
 _fini:
-	push %ebp
-	movl %esp, %ebp
-    
+	push ebp

@@ -65,36 +65,37 @@ void initialize_keyboard() {
     init_pics(0x20, 0x28);
 }
 
-bool keypressFinished = false;
-bool holdingShift = false;
+const unsigned short shiftFlag     = 1 << 1;
+const unsigned short finishFlag    = 1 << 2;
+unsigned int         keyPressFlags =      0;
 
 char getchar() {
-    char ret = 0;
+    static unsigned char inbyte = 0;
 
-    keypressFinished = false;
     while (1) {
-        char inbyte = inb(0x60);
-        if (inbyte & 0x80) { // If the highest bit from what we just read is set, the key has just been released
-            keypressFinished = true;
+        if (inb(0x60) != inbyte) {
+            inbyte = inb(0x60);
 
-            inbyte = inbyte ^ 0x80;
-            if (inbyte == 42 || inbyte == 54) {
-                holdingShift = false;
+            if (inbyte & 0x80) { // If the highest bit from what we just read is set, the key has just been released.
+                keyPressFlags |= finishFlag;
+
+                inbyte = inbyte ^ 0x80;
+                if (inbyte == 42 || inbyte == 54) { // If left or right shift was just release, unset the shift flag.
+                    keyPressFlags ^= shiftFlag;
+                    continue;
+                } 
             }
-        }
-        else if (inbyte != ret && inbyte > 0 && keypressFinished) {
-            if (inbyte == 42 || inbyte == 54) {
-                holdingShift = true;
+        } else if (inbyte > 0) {
+            if (inbyte == 42 || inbyte == 54) { // Shift was just held down.
+                keyPressFlags |= shiftFlag;
                 continue;
             }
 
-            char mapped_char = en_us_scancodes[inbyte];
-            if (mapped_char > 0) { // Make sure that the key isn't NULL
-                keypressFinished = false; // Reset for next time
+            keyPressFlags ^= finishFlag;
 
-                if (holdingShift) return mapped_char - 32;
-                return mapped_char;
-            }
+            char mapped_char = en_us_scancodes[inbyte];
+            if (keyPressFlags & shiftFlag) return mapped_char - 32;
+            return mapped_char;
         }
     }
 
